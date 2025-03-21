@@ -14,6 +14,11 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('students');
 
+  // API 기본 URL 설정 - 개발 환경과 프로덕션 환경 모두 지원
+  const apiBaseUrl = process.env.NODE_ENV === 'production' 
+    ? '/api' 
+    : 'http://localhost:8080/api';
+
   useEffect(() => {
     fetchStudents();
   }, []);
@@ -21,7 +26,7 @@ function App() {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8080/api/students');
+      const response = await axios.get(`${apiBaseUrl}/students`);
       setStudents(response.data.students || []);
     } catch (error) {
       console.error('Error fetching students:', error);

@@ -16,24 +16,27 @@
   ],
   "routes": [
     {
-      "src": "^/api/(.*)",
-      "dest": "api/index.py"
-    },
-    {
-      "src": "^/static/(.*)",
-      "dest": "client/dist/static/$1"
+      "src": "/api/(.*)",
+      "dest": "/api/index.py"
     },
     {
       "src": "^/assets/(.*)",
-      "dest": "client/dist/assets/$1"
+      "dest": "/client/dist/assets/$1"
     },
     {
-      "src": "^/favicon.ico",
-      "dest": "client/dist/favicon.ico"
+      "src": "^/static/(.*)",
+      "dest": "/client/dist/static/$1"
     },
     {
-      "src": ".*",
-      "dest": "client/dist/index.html"
+      "src": "/favicon.ico",
+      "dest": "/client/dist/favicon.ico"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/client/dist/index.html"
     }
   ]
 }

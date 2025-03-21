@@ -8,6 +8,11 @@ function StudentList({ students, loading, refreshStudents }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
+  // API 기본 URL 설정 - 개발 환경과 프로덕션 환경 모두 지원
+  const apiBaseUrl = process.env.NODE_ENV === 'production' 
+    ? '/api' 
+    : 'http://localhost:8080/api';
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewStudent({ ...newStudent, [name]: value });
@@ -16,7 +21,7 @@ function StudentList({ students, loading, refreshStudents }) {
   const handleAddStudent = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8080/api/students', newStudent);
+      await axios.post(`${apiBaseUrl}/students`, newStudent);
       setNewStudent({ name: '' });
       setIsAddingStudent(false);
       refreshStudents();
@@ -31,7 +36,7 @@ function StudentList({ students, loading, refreshStudents }) {
 
   const handleDeleteConfirm = async (studentId) => {
     try {
-      await axios.delete(`http://localhost:8080/api/students/${studentId}`);
+      await axios.delete(`${apiBaseUrl}/students/${studentId}`);
       refreshStudents();
       setDeleteConfirm(null);
     } catch (error) {

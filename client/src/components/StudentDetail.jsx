@@ -19,6 +19,11 @@ function StudentDetail({ refreshStudents }) {
   const [studentNotes, setStudentNotes] = useState('');
   const [saveNotesStatus, setSaveNotesStatus] = useState('');
 
+  // API 기본 URL 설정 - 개발 환경과 프로덕션 환경 모두 지원
+  const apiBaseUrl = process.env.NODE_ENV === 'production' 
+    ? '/api' 
+    : 'http://localhost:8080/api';
+
   useEffect(() => {
     fetchStudentDetails();
   }, [studentId]);
@@ -26,7 +31,7 @@ function StudentDetail({ refreshStudents }) {
   const fetchStudentDetails = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8080/api/students/${studentId}`);
+      const response = await axios.get(`${apiBaseUrl}/students/${studentId}`);
       setStudent(response.data.student);
       setStudentNotes(response.data.student.notes || '');
       setFeedbacks(response.data.feedbacks || []);
@@ -45,7 +50,7 @@ function StudentDetail({ refreshStudents }) {
   const saveStudentNotes = async () => {
     try {
       setSaveNotesStatus('saving');
-      await axios.put(`http://localhost:8080/api/students/${studentId}/notes`, {
+      await axios.put(`${apiBaseUrl}/students/${studentId}/notes`, {
         notes: studentNotes
       });
       setSaveNotesStatus('saved');
@@ -69,7 +74,7 @@ function StudentDetail({ refreshStudents }) {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`http://localhost:8080/api/students/${studentId}`);
+      await axios.delete(`${apiBaseUrl}/students/${studentId}`);
       refreshStudents();
       navigate('/');
     } catch (error) {
@@ -119,7 +124,7 @@ function StudentDetail({ refreshStudents }) {
 
   const handleUpdateFeedback = async (feedbackId) => {
     try {
-      await axios.put(`http://localhost:8080/api/feedback/${feedbackId}`, editFormData);
+      await axios.put(`${apiBaseUrl}/feedback/${feedbackId}`, editFormData);
       await fetchStudentDetails(); // Refresh the data
       setEditMode(null); // Exit edit mode
     } catch (error) {
@@ -133,7 +138,7 @@ function StudentDetail({ refreshStudents }) {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`http://localhost:8080/api/feedback/${feedbackId}`);
+      await axios.delete(`${apiBaseUrl}/feedback/${feedbackId}`);
       await fetchStudentDetails(); // Refresh the data
     } catch (error) {
       console.error('Error deleting feedback:', error);

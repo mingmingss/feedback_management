@@ -20,6 +20,11 @@ function ClassCalendar() {
   const [dateStudents, setDateStudents] = useState([]);
   const navigate = useNavigate();
 
+  // API 기본 URL 설정 - 개발 환경과 프로덕션 환경 모두 지원
+  const apiBaseUrl = process.env.NODE_ENV === 'production' 
+    ? '/api' 
+    : 'http://localhost:8080/api';
+
   useEffect(() => {
     fetchCalendarData();
     fetchStudents();
@@ -39,7 +44,7 @@ function ClassCalendar() {
       
       console.log(`Fetching calendar data from ${startDate} to ${endDate}`);
       
-      const response = await axios.get(`http://localhost:8080/api/calendar/status?start_date=${startDate}&end_date=${endDate}`);
+      const response = await axios.get(`${apiBaseUrl}/calendar/status?start_date=${startDate}&end_date=${endDate}`);
       console.log('Calendar data received:', response.data);
       
       if (response.data && Array.isArray(response.data.calendar)) {
@@ -60,7 +65,7 @@ function ClassCalendar() {
 
   const fetchStudents = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/students');
+      const response = await axios.get(`${apiBaseUrl}/students`);
       if (response.data && response.data.students) {
         setStudents(response.data.students);
         if (response.data.students.length > 0 && !selectedStudent) {
@@ -81,7 +86,7 @@ function ClassCalendar() {
     }
 
     try {
-      await axios.post('http://localhost:8080/api/scheduled-classes', {
+      await axios.post(`${apiBaseUrl}/scheduled-classes`, {
         student_id: parseInt(selectedStudent),
         day_of_week: parseInt(dayOfWeek),
         start_time: startTime,
@@ -108,7 +113,7 @@ function ClassCalendar() {
   // Mark a student as absent for a date
   const markStudentAsAbsent = async (studentId, date) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/feedback/mark-absent', {
+      const response = await axios.post(`${apiBaseUrl}/feedback/mark-absent`, {
         student_id: studentId,
         class_date: date
       });
@@ -168,7 +173,7 @@ function ClassCalendar() {
     const defaultTime = '15:00';
     
     try {
-      await axios.post('http://localhost:8080/api/scheduled-classes', {
+      await axios.post(`${apiBaseUrl}/scheduled-classes`, {
         student_id: parseInt(selectedStudent),
         day_of_week: dayOfWeek === 0 ? 6 : dayOfWeek - 1, // Convert to match backend (0 = Monday)
         start_time: defaultTime,

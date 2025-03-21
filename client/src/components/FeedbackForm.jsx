@@ -11,6 +11,11 @@ function FeedbackForm({ isNewStudent, refreshStudents }) {
   const [loading, setLoading] = useState(false);
   const [previousFeedbacks, setPreviousFeedbacks] = useState([]);
   
+  // API 기본 URL 설정 - 개발 환경과 프로덕션 환경 모두 지원
+  const apiBaseUrl = process.env.NODE_ENV === 'production' 
+    ? '/api' 
+    : 'http://localhost:8080/api';
+  
   // Extract date from URL query parameters if present
   const queryParams = new URLSearchParams(location.search);
   const dateFromUrl = queryParams.get('date');
@@ -37,7 +42,7 @@ function FeedbackForm({ isNewStudent, refreshStudents }) {
   const fetchStudentInfo = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8080/api/students/${studentId}`);
+      const response = await axios.get(`${apiBaseUrl}/students/${studentId}`);
       setStudent(response.data.student);
     } catch (error) {
       console.error('Error fetching student details:', error);
@@ -48,7 +53,7 @@ function FeedbackForm({ isNewStudent, refreshStudents }) {
 
   const fetchPreviousFeedbacks = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/feedback/${studentId}`);
+      const response = await axios.get(`${apiBaseUrl}/feedback/${studentId}`);
       setPreviousFeedbacks(response.data.feedbacks || []);
     } catch (error) {
       console.error('Error fetching previous feedbacks:', error);
@@ -107,7 +112,7 @@ function FeedbackForm({ isNewStudent, refreshStudents }) {
       
       // If it's a new student, create the student first
       if (isNewStudent) {
-        const studentResponse = await axios.post('http://localhost:8080/api/students', newStudentData);
+        const studentResponse = await axios.post(`${apiBaseUrl}/students`, newStudentData);
         currentStudentId = studentResponse.data.id;
       }
       
@@ -146,7 +151,7 @@ ${formData.parent_message}`;
         class_content: formattedContent
       };
       
-      await axios.post('http://localhost:8080/api/feedback', feedbackData);
+      await axios.post(`${apiBaseUrl}/feedback`, feedbackData);
       
       // Refresh the student list
       if (refreshStudents) {
