@@ -21,9 +21,13 @@ os.makedirs(data_dir, exist_ok=True)
 
 # Database configuration
 database_url = os.environ.get('DATABASE_URL')
-if database_url and database_url.startswith('postgres://'):
+if database_url:
     # Heroku/Vercel style database URL needs modification for SQLAlchemy
-    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql+pg8000://', 1)
+    # Make sure we're using pg8000 driver explicitly
+    elif database_url.startswith('postgresql://'):
+        database_url = database_url.replace('postgresql://', 'postgresql+pg8000://', 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
     # Fallback to SQLite for local development
